@@ -1,0 +1,37 @@
+services:
+  postgres:
+    image: postgres:17.1
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: select-sports
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    networks:
+      - internal
+
+  app:
+    environment:
+      WATCHPACK_POLLING: "true"
+    env_file:
+      - ./.env
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+    volumes:
+      - .:/app
+      - /app/node_modules
+    networks:
+      - internal
+
+volumes:
+  pg_data:
+
+networks:
+  internal:
